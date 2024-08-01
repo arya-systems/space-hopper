@@ -28,7 +28,9 @@ export default function Layout() {
               headerShown: false,
             }}
             initialRouteName="/"
-          />
+          >
+            <Stack.Screen name="index" options={{}} />
+          </Stack>
         </Material3ThemeProvider>
       </PersistGate>
     </Provider>
