@@ -55,11 +55,30 @@ export function Material3ThemeProvider({
     // onSurfaceVariant: "#f00",
   };
 
+  const observationThemeColors: Material3Scheme = {
+    ...theme.dark,
+    background: "#000",
+    surface: "#000",
+    elevation: {
+      ...theme.dark.elevation,
+      level0: "#00000000",
+      level1: "#0a0a0a",
+      level2: "#0f0f0f",
+      level3: "#121212",
+      level4: "#171717",
+      level5: "#212121",
+    },
+    backdrop: "#000000CC",
+    // onSurfaceVariant: "#f00",
+  };
+
   useEffect(() => {
     if (themeMode === "system") {
       resetTheme();
     } else if (themeMode === "pureBlack") {
       resetTheme();
+    } else if (themeMode === "observation") {
+      updateTheme("#ff0000");
     }
   }, [themeMode]);
 
@@ -67,7 +86,10 @@ export function Material3ThemeProvider({
     colorScheme === "dark"
       ? {
           ...MD3DarkTheme,
-          colors: themeMode === "pureBlack" ? pureBlackThemeColors : theme.dark,
+          colors:
+            (themeMode === "pureBlack" && pureBlackThemeColors) ||
+            (themeMode === "observation" && observationThemeColors) ||
+            theme.dark,
         }
       : { ...MD3LightTheme, colors: theme.light };
 

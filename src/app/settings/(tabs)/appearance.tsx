@@ -65,6 +65,12 @@ export default function Appearance() {
                 status={theme === "pureBlack" ? "checked" : "unchecked"}
                 onPress={() => settheme("pureBlack")}
               />
+              <RadioButton.Item
+                label="Observation"
+                value="observation"
+                status={theme === "observation" ? "checked" : "unchecked"}
+                onPress={() => settheme("observation")}
+              />
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={hideThemeDialog}>Cancel</Button>

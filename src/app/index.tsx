@@ -1,20 +1,47 @@
+import MapCanvas from "@/components/MapCanvas";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { FAB, Surface, Text, useTheme } from "react-native-paper";
+import { FAB, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Location from "expo-location";
 
 export default function index() {
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
 
+  const [location, setLocation] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
   const [isbuttonsHidden, setisbuttonsHidden] = useState<boolean>(false);
 
   return (
     <>
-      <Surface mode="flat" className="h-full">
-        <Text className="text-center font-bold text-2xl">Namaste World!</Text>
-      </Surface>
+      <MapCanvas />
+
+      <View className="absolute bottom-0 left-0 p-4">
+        <Text>{text}</Text>
+      </View>
 
       <View
         className="absolute top-0 right-0"
