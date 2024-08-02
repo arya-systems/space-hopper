@@ -12,7 +12,7 @@ export default function MapCanvas() {
 
   return (
     <Canvas
-      style={{ width: "100%", height: "100%", backgroundColor: colors.surface }}
+      style={{ width: "100%", height: "100%", backgroundColor: colors.error }}
     >
       <Group blendMode="multiply">
         <Circle cx={r} cy={r} r={r} color="cyan" />

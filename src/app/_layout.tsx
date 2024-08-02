@@ -1,6 +1,7 @@
 import { Material3ThemeProvider } from "@/components/providers/Material3ThemeProvider";
 import { persistor, store } from "@/features/store";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as StatusBar from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router/stack";
 import { useEffect } from "react";
@@ -9,10 +10,14 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 export default function Layout() {
-  useEffect(() => {
-    NavigationBar.setPositionAsync("absolute");
-    NavigationBar.setBackgroundColorAsync("#00000000");
-  }, []);
+  // useEffect(() => {
+  //   StatusBar.setStatusBarHidden(true);
+  //   NavigationBar.setVisibilityAsync("hidden");
+  //   NavigationBar.setPositionAsync("absolute");
+  //   NavigationBar.setBackgroundColorAsync("#00000000");
+  //   // NavigationBar.setVisibilityAsync("visible");
+  //   // StatusBar.setStatusBarHidden(false);
+  // }, []);
 
   return (
     <Provider store={store}>
