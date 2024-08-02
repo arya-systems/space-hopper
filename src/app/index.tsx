@@ -833,7 +833,6 @@ export default function index() {
         className="absolute top-0 right-0"
         style={{
           padding: 16,
-          paddingTop: top + 16,
           display: fullScreen ? "none" : "flex",
         }}
       >
