@@ -6,8 +6,6 @@ import { useAppTheme } from "./providers/Material3ThemeProvider";
 export default function MapCanvas() {
   const { colors } = useAppTheme();
 
-  const data = require("@/data/createDb");
-
   const width = 256;
   const height = 256;
   const r = width * 0.33;

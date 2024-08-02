@@ -2,7 +2,7 @@ import MapCanvas from "@/components/MapCanvas";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, View } from "react-native";
-import { FAB, Text, useTheme } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { gdata } from "@/data/globals";
