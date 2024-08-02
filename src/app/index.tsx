@@ -841,6 +841,16 @@ export default function index() {
           icon="settings"
           onPress={() => router.navigate("settings")}
         />
+        <FAB
+          size="small"
+          icon="home"
+          onPress={() => router.navigate("three")}
+        />
+        <FAB
+          size="small"
+          icon="home"
+          onPress={() => router.navigate("three-map")}
+        />
       </View>
       <FAB
         size="medium"
