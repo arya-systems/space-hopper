@@ -34,31 +34,43 @@ export default function index() {
   }
 
   //NOTE: main
-  const [alignOnDso, setalignOnDso] = useState();
-  const [showStarNames, setshowStarNames] = useState();
-  const [targetsList, settargetsList] = useState();
+  const [alignOnDso, setalignOnDso] = useState<boolean>(false);
+  const [showStarNames, setshowStarNames] = useState<boolean>(true);
+  const [targetsList, settargetsList] = useState([]);
   const [prevXy, setprevXy] = useState();
   const [startZoomSize, setstartZoomSize] = useState();
   const [startZoom, setstartZoom] = useState();
-  const [allowPinchZoom, setallowPinchZoom] = useState();
+  const [allowPinchZoom, setallowPinchZoom] = useState<boolean>(true);
   const [touchStartTime, settouchStartTime] = useState();
-  const [targetIndex, settargetIndex] = useState();
-  const [alignIndex, setalignIndex] = useState();
+  const [targetIndex, settargetIndex] = useState(-1);
+  const [alignIndex, setalignIndex] = useState(-1);
   const [expectingSelect, setexpectingSelect] = useState();
-  const [cameraProjection, setcameraProjection] = useState();
-  const [expectedFrameRateMs, setexpectedFrameRateMs] = useState();
-  const [useCompass, setuseCompass] = useState();
+  const [cameraProjection, setcameraProjection] = useState<boolean>(true);
+  const [expectedFrameRateMs, setexpectedFrameRateMs] = useState(66);
+  const [useCompass, setuseCompass] = useState<boolean>(false);
 
-  const [largeFont, setlargeFont] = useState();
-  const [fovValues, setfovValues] = useState();
-  const [fov, setfov] = useState();
-  const [mag, setmag] = useState();
-  const [gData, setgData] = useState();
-  const [alignMatrix, setalignMatrix] = useState();
-  const [useGyro, setuseGyro] = useState();
+  const [largeFont, setlargeFont] = useState(0);
+  const [fovValues, setfovValues] = useState([7, 15, 30, 60, 90, 120, 150]);
+  const [fov, setfov] = useState(60);
+  const [mag, setmag] = useState(4);
+  const [gData, setgData] = useState({
+    lat: 31.9,
+    lon: 34.8,
+    compass_alpha: 0,
+    alpha: 0,
+    alpha_user_offset: 0,
+    alpha_gyro: 0,
+    alpha_diff: 0,
+    beta: 0,
+    gamma: 0,
+    time: Date.now(), //1614716453109
+  });
+
+  const [alignMatrix, setalignMatrix] = useState([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+  const [useGyro, setuseGyro] = useState<boolean>(false);
   const [fullScreen, setfullScreen] = useState<boolean>(false);
 
-  const [status, setstatus] = useState();
+  const [status, setstatus] = useState<string>("");
   const [watchList, setwatchList] = useState();
 
   return (
