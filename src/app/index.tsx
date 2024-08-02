@@ -13,9 +13,6 @@ import CPReduce from "@/data/CPReduce";
 import { allstars_index_name } from "@/data/allstars_index_name";
 import { constellation_lines } from "@/data/constellation_lines";
 
-// import * as NavigationBar from "expo-navigation-bar";
-// import * as StatusBar from "expo-status-bar";
-
 export default function index() {
   const { colors } = useAppTheme();
   const { top, bottom } = useSafeAreaInsets();
