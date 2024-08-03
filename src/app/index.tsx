@@ -44,7 +44,6 @@ export default function index() {
 
   //NOTE: main
   const path = Skia.Path.Make();
-  // path.addCircle(10, 10, 20);
   // path.stroke(); //WARN: causing crash;
 
   const [showObj, setshowObj] = useState<any>({
@@ -66,18 +65,32 @@ export default function index() {
   const [startZoom, setstartZoom] = useState();
   const [allowPinchZoom, setallowPinchZoom] = useState<boolean>(true);
   const [touchStartTime, settouchStartTime] = useState();
-  const [targetIndex, settargetIndex] = useState(-1);
-  const [alignIndex, setalignIndex] = useState(-1);
+  const [targetIndex, settargetIndex] = useState<number>(-1);
+  const [alignIndex, setalignIndex] = useState<number>(-1);
   const [expectingSelect, setexpectingSelect] = useState();
   const [cameraProjection, setcameraProjection] = useState<boolean>(true);
-  const [expectedFrameRateMs, setexpectedFrameRateMs] = useState(66);
+  const [expectedFrameRateMs, setexpectedFrameRateMs] = useState<number>(66);
   const [useCompass, setuseCompass] = useState<boolean>(false);
 
-  const [largeFont, setlargeFont] = useState(0);
-  const [fovValues, setfovValues] = useState([7, 15, 30, 60, 90, 120, 150]);
-  const [fov, setfov] = useState(60);
-  const [mag, setmag] = useState(4);
-  const [gData, setgData] = useState<any>({
+  const [largeFont, setlargeFont] = useState<number>(0);
+  const [fovValues, setfovValues] = useState<number[]>([
+    7, 15, 30, 60, 90, 120, 150,
+  ]);
+  const [fov, setfov] = useState<number>(60);
+  const [mag, setmag] = useState<number>(4);
+  type GDataState = {
+    lat: number;
+    lon: number;
+    compass_alpha: number;
+    alpha: number;
+    alpha_user_offset: number;
+    alpha_gyro: number;
+    alpha_diff: number;
+    beta: number;
+    gamma: number;
+    time: number; //1614716453109
+  };
+  const [gData, setgData] = useState<GDataState>({
     lat: 31.9,
     lon: 34.8,
     compass_alpha: 0,
@@ -358,8 +371,10 @@ export default function index() {
         //     context.fill();
         //     context.stroke();
         path.addCircle(pix_x, pix_y, size * 1.5);
+        path.close();
         // path.stroke();
         path.addCircle(pix_x, pix_y, size / 3);
+        path.close();
         // path.stroke();
       } else if (star.t == "Gc") {
         //     context.lineWidth = 2;
@@ -373,8 +388,10 @@ export default function index() {
         //     context.fill();
         //     context.stroke();
         path.addCircle(pix_x, pix_y, size);
+        path.close();
         // path.stroke();
         path.addCircle(pix_x, pix_y, size / 3);
+        path.close();
         // path.stroke();
       } else if (star.t == "Oc") {
         //     context.lineWidth = 2;
@@ -388,8 +405,10 @@ export default function index() {
         //     context.stroke();
         //     context.setLineDash([]);
         path.addCircle(pix_x, pix_y, size);
+        path.close();
         // path.stroke();
         path.addCircle(pix_x, pix_y, size / 3);
+        path.close();
         // path.stroke();
       } else if (star.t == "Ne") {
         //     context.lineWidth = 1;
@@ -413,8 +432,10 @@ export default function index() {
         //     context.stroke();
 
         path.addCircle(pix_x, pix_y, size);
+        path.close();
         // path.stroke();
         path.addCircle(pix_x, pix_y, size / 3);
+        path.close();
         // path.stroke();
       } else if (star.t == "U") {
         //     context.lineWidth = 2;
@@ -432,12 +453,14 @@ export default function index() {
         path.lineTo(pix_x + size, pix_y);
         path.lineTo(pix_x, pix_y - size);
         path.lineTo(pix_x - size, pix_y);
+        path.close();
         // path.stroke();
       } else {
         //     context.arc(pix_x, pix_y, size, 0, 2 * Math.PI, false);
         //     context.fill();
         //     context.stroke();
         path.addCircle(pix_x, pix_y, size);
+        path.close();
         // path.stroke();
       }
     }
@@ -692,17 +715,18 @@ export default function index() {
       //     width / 2 + length * dirs[i][0],
       //     height / 2 + length * dirs[i][1],
       //   );
-      // path.moveTo(
-      //   width / 2 + offset * dirs[i][0],
-      //   height / 2 + offset * dirs[i][1],
-      // );
-      // path.lineTo(
-      //   width / 2 + length * dirs[i][0],
-      //   height / 2 + length * dirs[i][1],
-      // );
+      path.moveTo(
+        width / 2 + offset * dirs[i][0],
+        height / 2 + offset * dirs[i][1],
+      );
+      path.lineTo(
+        width / 2 + length * dirs[i][0],
+        height / 2 + length * dirs[i][1],
+      );
     }
     // context.stroke();
 
+    path.close();
     // path.stroke();
   };
 
@@ -757,6 +781,7 @@ export default function index() {
     // context.fillText(left, width / 2, height - 5);
 
     // path.stroke();
+    path.close();
   };
 
   const plotLines = (camRays: any) => {
@@ -775,6 +800,7 @@ export default function index() {
 
       path.moveTo(p1.x * width, p1.y * height);
       path.lineTo(p2.x * width, p2.y * height);
+      path.close();
       // path.stroke();
     }
   };
@@ -871,7 +897,7 @@ export default function index() {
   };
 
   useEffect(() => {
-    plotStars();
+    // plotStars();
   }, []);
 
   return (
@@ -892,7 +918,7 @@ export default function index() {
       </View>
 
       <View
-        className="absolute top-0 right-0"
+        className="absolute top-0 right-0 space-y-2"
         style={{
           padding: 16,
           display: fullScreen ? "none" : "flex",

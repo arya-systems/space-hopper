@@ -21,23 +21,15 @@ export default function Appearance() {
   const showThemeDialog = () => setisThemeDialogVisible(true);
   const hideThemeDialog = () => setisThemeDialogVisible(false);
 
-  const [isUsingSystemFont, setisUsingSystemFont] = useState<boolean>(
-    appearance.typography.useSystemFont,
-  );
-  const toggleIsSystemFontEnabled = () => setisUsingSystemFont((prev) => !prev);
-
   useEffect(() => {
     dispatch(
       setappearance({
         colors: {
           theme,
         },
-        typography: {
-          useSystemFont: isUsingSystemFont,
-        },
       }),
     );
-  }, [theme, isUsingSystemFont]);
+  }, [theme]);
 
   return (
     <ScrollView>
@@ -77,19 +69,6 @@ export default function Appearance() {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-      </List.Section>
-
-      <List.Section>
-        <List.Subheader>TYPOGRAPHY</List.Subheader>
-        <List.Item
-          title="Use System Font"
-          right={() => (
-            <Switch
-              value={isUsingSystemFont}
-              onChange={toggleIsSystemFontEnabled}
-            />
-          )}
-        />
       </List.Section>
     </ScrollView>
   );
