@@ -12,6 +12,7 @@ import JulianDate from "@/data/julian-date";
 import CPReduce from "@/data/CPReduce";
 import { allstars_index_name } from "@/data/allstars_index_name";
 import { constellation_lines } from "@/data/constellation_lines";
+import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 
 export default function index() {
   const { colors } = useAppTheme();
@@ -42,6 +43,9 @@ export default function index() {
   }
 
   //NOTE: main
+  const path = Skia.Path.Make();
+  // path.addCircle(10, 10, 20);
+  // path.stroke(); //WARN: causing crash;
 
   const [showObj, setshowObj] = useState<any>({
     S: true,
@@ -56,7 +60,7 @@ export default function index() {
 
   const [alignOnDso, setalignOnDso] = useState<boolean>(false);
   const [showStarNames, setshowStarNames] = useState<boolean>(true);
-  const [targetsList, settargetsList] = useState<any>([]);
+  const [targetsList, settargetsList] = useState<object[]>([]);
   const [prevXy, setprevXy] = useState();
   const [startZoomSize, setstartZoomSize] = useState();
   const [startZoom, setstartZoom] = useState();
@@ -108,10 +112,6 @@ export default function index() {
     var sX = Math.sin(_x);
     var sY = Math.sin(_y);
     var sZ = Math.sin(_z);
-
-    //
-    // ZXY rotation matrix construction.
-    //
 
     var m11 = cZ * cY - sZ * sX * sY;
     var m12 = -cX * sZ;
@@ -315,157 +315,186 @@ export default function index() {
     return res;
   };
 
+  //NOTE: move from context
   const plotStar = (star: any, camRays: any, highlight: any) => {
-    // var pos = projectToCamera(star.RA, star.DE, camRays);
-    // if (!pos) return null;
+    var pos = projectToCamera(star.RA, star.DE, camRays);
+    if (!pos) return null;
     // context.beginPath();
-    // var size = star.t == "S" ? 6.5 - star.AM : 6;
-    // if (size < 1) size = 1;
-    // var color;
-    // if (highlight >= 2) {
-    //   color = highlight == 3 ? colors.tertiary : colors.onSurfaceVariant;
-    //   size = 10;
-    // } else {
-    //   color = colors.primary;
-    // }
+    var size = star.t == "S" ? 6.5 - star.AM : 6;
+    if (size < 1) size = 1;
+    var color;
+    if (highlight >= 2) {
+      color = highlight == 3 ? colors.tertiary : colors.onSurfaceVariant;
+      size = 10;
+    } else {
+      color = colors.primary;
+    }
     // if (star.t == "S") context.fillStyle = color;
     // else context.fillStyle = "black";
-    // var pix_x = pos.x * width;
-    // var pix_y = pos.y * height;
-    // let result = { x: pix_x, y: pix_y, index: -1 };
-    // if (highlight == 0) return result;
-    // if (star.t != "Ca") {
-    //   context.strokeStyle = color;
-    //   context.lineWidth = 1;
-    //   if (star.t == "Ga") {
-    //     context.ellipse(
-    //       pix_x,
-    //       pix_y,
-    //       size * 1.5,
-    //       size / 1.5,
-    //       Math.PI / 4,
-    //       0,
-    //       2 * Math.PI,
-    //       false,
-    //     );
-    //     context.fill();
-    //     context.stroke();
-    //     context.beginPath();
-    //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
-    //     context.fillStyle = color;
-    //     context.fill();
-    //     context.stroke();
-    //   } else if (star.t == "Gc") {
-    //     context.lineWidth = 2;
-    //     context.setLineDash([1, 3]);
-    //     context.arc(pix_x, pix_y, size, 2 * Math.PI, false);
-    //     context.stroke();
-    //     context.beginPath();
-    //     context.setLineDash([]);
-    //     context.fillStyle = color;
-    //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
-    //     context.fill();
-    //     context.stroke();
-    //   } else if (star.t == "Oc") {
-    //     context.lineWidth = 2;
-    //     context.setLineDash([1, 3]);
-    //     context.arc(pix_x, pix_y, size, 2 * Math.PI, false);
-    //     context.stroke();
-    //     context.beginPath();
-    //     context.setLineDash([1, 3]);
-    //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
-    //     context.fill();
-    //     context.stroke();
-    //     context.setLineDash([]);
-    //   } else if (star.t == "Ne") {
-    //     context.lineWidth = 1;
-    //     context.moveTo(pix_x - size, pix_y - size);
-    //     var f = 4;
-    //     context.bezierCurveTo(
-    //       pix_x + f * size,
-    //       pix_y - size,
-    //       pix_x - f * size,
-    //       pix_y + size,
-    //       pix_x + size,
-    //       pix_y + size,
-    //     );
-    //     context.stroke();
-    //     context.beginPath();
-    //     context.fillStyle = color;
-    //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
-    //     context.fill();
-    //     context.stroke();
-    //   } else if (star.t == "U") {
-    //     context.lineWidth = 2;
-    //     context.beginPath();
-    //     context.moveTo(pix_x - size, pix_y);
-    //     context.lineTo(pix_x, pix_y + size);
-    //     context.lineTo(pix_x + size, pix_y);
-    //     context.lineTo(pix_x, pix_y - size);
-    //     context.lineTo(pix_x - size, pix_y);
-    //     context.fillStyle = "black";
-    //     context.fill();
-    //     context.stroke();
-    //   } else {
-    //     context.arc(pix_x, pix_y, size, 0, 2 * Math.PI, false);
-    //     context.fill();
-    //     context.stroke();
-    //   }
-    // }
-    // if (star.name || highlight >= 2) {
-    //   if (star.t == "Ca") {
-    //     color = colors.outline; //NOTE: construction color
-    //   }
-    //   context.strokeStyle = color;
-    //   context.fillStyle = color;
-    //   if (star.t == "Ca") {
-    //     context.font = largeF("Sans", 4);
-    //     context.textBaseline = "middle";
-    //     context.textAlign = "center";
-    //     context.fillText(star.name, pix_x, pix_y);
-    //   } else {
-    //     let text = star.name ? star.name : "";
-    //     if (star.t == "S" && !showStarNames && highlight < 3) text = "";
-    //     let text_extra = [];
-    //     let name_extra = [];
-    //     if (highlight > 1) {
-    //       context.font = largeF("Sans", 6);
-    //       if (highlight == 3) {
-    //         if (star.AM != -1) text_extra.push("m=" + star.AM.toFixed(1));
-    //         if (star.s) {
-    //           text_extra.push(formatSize(star.s));
-    //         }
-    //         if ("n2" in star) {
-    //           name_extra = star.n2;
-    //         }
-    //       }
-    //     } else {
-    //       context.font = largeF("Sans", 3);
-    //     }
-    //     context.textBaseline = "bottom";
-    //     context.textAlign = "start";
-    //     context.fillText(text, pix_x + size + 1, pix_y - size - 1);
-    //     if (text_extra) {
-    //       context.textBaseline = "top";
-    //       context.fillText(
-    //         text_extra.join(", "),
-    //         pix_x + size + 1,
-    //         pix_y - size / 2 - 1,
-    //       );
-    //       context.textBaseline = "bottom";
-    //     }
-    //     if (name_extra) {
-    //       context.textBaseline = "top";
-    //       context.fillText(
-    //         name_extra.join(", "),
-    //         pix_x + size + 1,
-    //         pix_y + 2 * size - 1,
-    //       );
-    //       context.textBaseline = "bottom";
-    //     }
-    //   }
-    // }
-    // return result;
+    var pix_x = pos.x * width;
+    var pix_y = pos.y * height;
+    let result = { x: pix_x, y: pix_y, index: -1 };
+    if (highlight == 0) return result;
+    // console.log(result);
+    if (star.t != "Ca") {
+      //   context.strokeStyle = color;
+      //   context.lineWidth = 1;
+      if (star.t == "Ga") {
+        //     context.ellipse(
+        //       pix_x,
+        //       pix_y,
+        //       size * 1.5,
+        //       size / 1.5,
+        //       Math.PI / 4,
+        //       0,
+        //       2 * Math.PI,
+        //       false,
+        // );
+        //     context.fill();
+        //     context.stroke();
+        //     context.beginPath();
+        //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
+        //     context.fillStyle = color;
+        //     context.fill();
+        //     context.stroke();
+        path.addCircle(pix_x, pix_y, size * 1.5);
+        // path.stroke();
+        path.addCircle(pix_x, pix_y, size / 3);
+        // path.stroke();
+      } else if (star.t == "Gc") {
+        //     context.lineWidth = 2;
+        //     context.setLineDash([1, 3]);
+        //     context.arc(pix_x, pix_y, size, 2 * Math.PI, false);
+        //     context.stroke();
+        //     context.beginPath();
+        //     context.setLineDash([]);
+        //     context.fillStyle = color;
+        //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
+        //     context.fill();
+        //     context.stroke();
+        path.addCircle(pix_x, pix_y, size);
+        // path.stroke();
+        path.addCircle(pix_x, pix_y, size / 3);
+        // path.stroke();
+      } else if (star.t == "Oc") {
+        //     context.lineWidth = 2;
+        //     context.setLineDash([1, 3]);
+        //     context.arc(pix_x, pix_y, size, 2 * Math.PI, false);
+        //     context.stroke();
+        //     context.beginPath();
+        //     context.setLineDash([1, 3]);
+        //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
+        //     context.fill();
+        //     context.stroke();
+        //     context.setLineDash([]);
+        path.addCircle(pix_x, pix_y, size);
+        // path.stroke();
+        path.addCircle(pix_x, pix_y, size / 3);
+        // path.stroke();
+      } else if (star.t == "Ne") {
+        //     context.lineWidth = 1;
+        //     context.moveTo(pix_x - size, pix_y - size);
+
+        path.moveTo(pix_x - size, pix_y - size);
+        var f = 4;
+        //     context.bezierCurveTo(
+        //       pix_x + f * size,
+        //       pix_y - size,
+        //       pix_x - f * size,
+        //       pix_y + size,
+        //       pix_x + size,
+        //       pix_y + size,
+        //     );
+        //     context.stroke();
+        //     context.beginPath();
+        //     context.fillStyle = color;
+        //     context.arc(pix_x, pix_y, size / 3, 0, 2 * Math.PI, false);
+        //     context.fill();
+        //     context.stroke();
+
+        path.addCircle(pix_x, pix_y, size);
+        // path.stroke();
+        path.addCircle(pix_x, pix_y, size / 3);
+        // path.stroke();
+      } else if (star.t == "U") {
+        //     context.lineWidth = 2;
+        //     context.beginPath();
+        //     context.moveTo(pix_x - size, pix_y);
+        //     context.lineTo(pix_x, pix_y + size);
+        //     context.lineTo(pix_x + size, pix_y);
+        //     context.lineTo(pix_x, pix_y - size);
+        //     context.lineTo(pix_x - size, pix_y);
+        //     context.fillStyle = "black";
+        //     context.fill();
+        //     context.stroke();
+        path.moveTo(pix_x - size, pix_y);
+        path.lineTo(pix_x, pix_y + size);
+        path.lineTo(pix_x + size, pix_y);
+        path.lineTo(pix_x, pix_y - size);
+        path.lineTo(pix_x - size, pix_y);
+        // path.stroke();
+      } else {
+        //     context.arc(pix_x, pix_y, size, 0, 2 * Math.PI, false);
+        //     context.fill();
+        //     context.stroke();
+        path.addCircle(pix_x, pix_y, size);
+        // path.stroke();
+      }
+    }
+    if (star.name || highlight >= 2) {
+      if (star.t == "Ca") {
+        color = colors.outline; //NOTE: construction color
+      }
+      //   context.strokeStyle = color;
+      //   context.fillStyle = color;
+      if (star.t == "Ca") {
+        //     context.font = largeF("Sans", 4);
+        //     context.textBaseline = "middle";
+        //     context.textAlign = "center";
+        //     context.fillText(star.name, pix_x, pix_y);
+      } else {
+        let text = star.name ? star.name : "";
+        if (star.t == "S" && !showStarNames && highlight < 3) text = "";
+        let text_extra = [];
+        let name_extra = [];
+        if (highlight > 1) {
+          //       context.font = largeF("Sans", 6);
+          if (highlight == 3) {
+            if (star.AM != -1) text_extra.push("m=" + star.AM.toFixed(1));
+            if (star.s) {
+              text_extra.push(formatSize(star.s));
+            }
+            if ("n2" in star) {
+              name_extra = star.n2;
+            }
+          }
+        } else {
+          //       context.font = largeF("Sans", 3);
+        }
+        //     context.textBaseline = "bottom";
+        //     context.textAlign = "start";
+        //     context.fillText(text, pix_x + size + 1, pix_y - size - 1);
+        if (text_extra) {
+          //       context.textBaseline = "top";
+          //       context.fillText(
+          //         text_extra.join(", "),
+          //         pix_x + size + 1,
+          //         pix_y - size / 2 - 1,
+          //       );
+          //       context.textBaseline = "bottom";
+        }
+        if (name_extra) {
+          //       context.textBaseline = "top";
+          //       context.fillText(
+          //         name_extra.join(", "),
+          //         pix_x + size + 1,
+          //         pix_y + 2 * size - 1,
+          //       );
+          //       context.textBaseline = "bottom";
+        }
+      }
+    }
+    return result;
   };
 
   const doNothing = (index: any) => {};
@@ -645,25 +674,36 @@ export default function index() {
     // context.strokeStyle = colors.primary; //style.cross
     // context.fillStyle = colors.primary; //style.cross
     // context.lineWidth = 3;
-    // var dirs = [
-    //   [1, 0],
-    //   [0, 1],
-    //   [-1, 0],
-    //   [0, -1],
-    // ];
-    // var length = 50;
-    // var offset = 10;
-    // for (var i = 0; i < dirs.length; i++) {
-    //   context.moveTo(
-    //     width / 2 + offset * dirs[i][0],
-    //     height / 2 + offset * dirs[i][1],
-    //   );
-    //   context.lineTo(
-    //     width / 2 + length * dirs[i][0],
-    //     height / 2 + length * dirs[i][1],
-    //   );
-    // }
+
+    var dirs = [
+      [1, 0],
+      [0, 1],
+      [-1, 0],
+      [0, -1],
+    ];
+    var length = 50;
+    var offset = 10;
+    for (var i = 0; i < dirs.length; i++) {
+      //   context.moveTo(
+      //     width / 2 + offset * dirs[i][0],
+      //     height / 2 + offset * dirs[i][1],
+      //   );
+      //   context.lineTo(
+      //     width / 2 + length * dirs[i][0],
+      //     height / 2 + length * dirs[i][1],
+      //   );
+      // path.moveTo(
+      //   width / 2 + offset * dirs[i][0],
+      //   height / 2 + offset * dirs[i][1],
+      // );
+      // path.lineTo(
+      //   width / 2 + length * dirs[i][0],
+      //   height / 2 + length * dirs[i][1],
+      // );
+    }
     // context.stroke();
+
+    // path.stroke();
   };
 
   const plotBearing = (xyz: any) => {
@@ -673,30 +713,37 @@ export default function index() {
     // context.lineWidth = 5;
     // context.arc(width / 2, height / 2, 10, 0, 2 * Math.PI, false);
     // context.moveTo(width / 2, height / 2);
-    // var dx = xyz.x;
-    // var dy = -xyz.y;
-    // var r = 1 / Math.sqrt(dx * dx + dy * dy);
-    // dx = dx * r;
-    // dy = dy * r;
-    // var length = 100;
-    // var pos = xyzTo2d(xyz);
-    // if (pos) {
-    //   var px = width * (pos.x - 0.5);
-    //   var py = height * (pos.y - 0.5);
-    //   var dist = Math.sqrt(px * px + py * py);
-    //   if (dist < length) length = dist;
-    // }
+
+    path.addCircle(width / 2, height / 2, 10);
+    path.moveTo(width / 2, height / 2);
+
+    var dx = xyz.x;
+    var dy = -xyz.y;
+    var r = 1 / Math.sqrt(dx * dx + dy * dy);
+    dx = dx * r;
+    dy = dy * r;
+    var length = 100;
+    var pos = xyzTo2d(xyz);
+    if (pos) {
+      var px = width * (pos.x - 0.5);
+      var py = height * (pos.y - 0.5);
+      var dist = Math.sqrt(px * px + py * py);
+      if (dist < length) length = dist;
+    }
     // context.lineTo(width / 2 + dx * length, height / 2 + dy * length);
-    // var updn =
-    //   (dy > 0 ? "Down" : "Up") +
-    //   " " +
-    //   Math.abs((Math.atan2(-xyz.y, xyz.z) / Math.PI) * 180).toFixed(1) +
-    //   "\u00b0";
-    // var left =
-    //   (dx > 0 ? "Right" : "Left") +
-    //   " " +
-    //   Math.abs((Math.atan2(xyz.x, xyz.z) / Math.PI) * 180).toFixed(1) +
-    //   "\u00b0";
+
+    path.lineTo(width / 2 + dx * length, height / 2 + dy * length);
+
+    var updn =
+      (dy > 0 ? "Down" : "Up") +
+      " " +
+      Math.abs((Math.atan2(-xyz.y, xyz.z) / Math.PI) * 180).toFixed(1) +
+      "\u00b0";
+    var left =
+      (dx > 0 ? "Right" : "Left") +
+      " " +
+      Math.abs((Math.atan2(xyz.x, xyz.z) / Math.PI) * 180).toFixed(1) +
+      "\u00b0";
     // context.stroke();
     // context.lineWidth = 0;
     // context.font = largeF("Serif", 6);
@@ -708,30 +755,36 @@ export default function index() {
     // context.textAlign = "center";
     // context.textBaseline = "bottom";
     // context.fillText(left, width / 2, height - 5);
+
+    // path.stroke();
   };
 
   const plotLines = (camRays: any) => {
-    // if (!showObj.Ca) return;
-    // for (var i = 0; i < constellation_lines.length; i++) {
-    //   let line = constellation_lines[i];
-    //   var p1 = projectToCamera(line.r0, line.d0, camRays, false);
-    //   var p2 = projectToCamera(line.r1, line.d1, camRays, false);
-    //   if (!p1 || !p2) continue;
-    //   context.beginPath();
-    //   context.strokeStyle = colors.primary; //style.constelations
-    //   context.lineWidth = 1;
-    //   context.moveTo(p1.x * width, p1.y * height);
-    //   context.lineTo(p2.x * width, p2.y * height);
-    //   context.stroke();
-    // }
+    if (!showObj.Ca) return;
+    for (var i = 0; i < constellation_lines.length; i++) {
+      let line = constellation_lines[i];
+      var p1 = projectToCamera(line.r0, line.d0, camRays, false);
+      var p2 = projectToCamera(line.r1, line.d1, camRays, false);
+      if (!p1 || !p2) continue;
+      //   context.beginPath();
+      //   context.strokeStyle = colors.primary; //style.constelations
+      //   context.lineWidth = 1;
+      //   context.moveTo(p1.x * width, p1.y * height);
+      //   context.lineTo(p2.x * width, p2.y * height);
+      //   context.stroke();
+
+      path.moveTo(p1.x * width, p1.y * height);
+      path.lineTo(p2.x * width, p2.y * height);
+      // path.stroke();
+    }
   };
 
   const plotAltAz = (fwd: any) => {
-    // var alt: any = (Math.asin(fwd[2]) / Math.PI) * 180;
-    // var az: any = (Math.atan2(fwd[0], fwd[1]) / Math.PI) * 180;
-    // alt = "Alt:" + alt.toFixed(1);
-    // if (az < 0) az = 360 + az;
-    // az = "Az:" + az.toFixed(1);
+    var alt: any = (Math.asin(fwd[2]) / Math.PI) * 180;
+    var az: any = (Math.atan2(fwd[0], fwd[1]) / Math.PI) * 180;
+    alt = "Alt:" + alt.toFixed(1);
+    if (az < 0) az = 360 + az;
+    az = "Az:" + az.toFixed(1);
     // context.font = largeF("Sans", 5);
     // context.textBaseline = "bottom";
     // context.textAlign = "end";
@@ -742,79 +795,79 @@ export default function index() {
   };
 
   const plotStars = () => {
-    // let start = Date.now();
-    //
-    // settargetsList([]);
-    // setgData({ ...gData, time: Date.now() });
-    // updateDebugTime(gData.time);
-    // var camRays = getCameraRays();
+    let start = Date.now();
+
+    settargetsList([]);
+    setgData({ ...gData, time: Date.now() });
+    updateDebugTime(gData.time);
+    var camRays = getCameraRays();
     // context.fillStyle = "black";
     // context.fillRect(0, 0, width, height);
     // context.fillStyle = colors.primary;
-    //
-    // for (var i = 0; i < allstars.length; i++) {
-    //   var st = allstars[i].t;
-    //
-    //   if (st == "P") {
-    //     let pos = getSolarSystemObject(allstars[i].name);
-    //     allstars[i].RA = pos.RA;
-    //     allstars[i].DE = pos.DE;
-    //   }
-    //
-    //   var _mag = allstars[i].AM;
-    //   if (
-    //     (st == "S" && _mag > mag) ||
-    //     (st != "S" && _mag > mag) ||
-    //     !showObj[st]
-    //   ) {
-    //     i = allstars_index[st] - 1;
-    //     continue;
-    //   }
-    //   var highlight = 1;
-    //   if (i == targetIndex || i == alignIndex) highlight = 0;
-    //   var pos = plotStar(allstars[i], camRays, highlight);
-    //   // select only stars if not aligned
-    //   // if aligned select all but constellations
-    //   var waiting_for_align = expectingSelect == selectAlignWithTimer;
-    //   if (pos && st != "Ca" && (validAlignType(st) || !waiting_for_align)) {
-    //     pos.index = i;
-    //     settargetsList((prev: any) => prev.push(pos)); //NOTE: push pos
-    //   }
-    // }
-    // if (alignIndex >= 0 && alignIndex != targetIndex) {
-    //   plotStar(allstars[alignIndex], camRays, 2);
-    // }
-    // if (targetIndex >= 0) {
-    //   var star = allstars[targetIndex];
-    //   var xyz = cameraBearing(star.RA, star.DE, camRays);
-    //   plotBearing(xyz);
-    //   var target_pos = plotStar(star, camRays, 3);
-    //   // handle a case were target < mag but it is valid align target
-    //   // ususally it means it is shown due to search
-    //   if (target_pos && validAlignType(star.t)) {
-    //     target_pos.index = targetIndex;
-    //     var found = false;
-    //     for (var i = 0; i < targetsList.length; i++) {
-    //       if (targetsList[i].index == target_pos.index) {
-    //         found = true;
-    //         break;
-    //       }
-    //     }
-    //     if (!found) {
-    //       settargetsList((prev: any) => prev.push(target_pos)); //NOTE: push target_pos
-    //     }
-    //   }
-    // } else if (useGyro) {
-    //   plotCross();
-    // }
-    // plotLines(camRays);
-    // plotAltAz(camRays[2]);
-    // var passed = Date.now() - start;
-    // if (passed > expectedFrameRateMs / 2) {
-    //   setTimeout(plotStars, expectedFrameRateMs);
-    // } else {
-    //   setTimeout(plotStars, expectedFrameRateMs - passed);
-    // }
+
+    for (var i = 0; i < allstars.length; i++) {
+      var st = allstars[i].t;
+
+      if (st == "P") {
+        let pos = getSolarSystemObject(allstars[i].name);
+        allstars[i].RA = pos.RA;
+        allstars[i].DE = pos.DE;
+      }
+
+      var _mag = allstars[i].AM;
+      if (
+        (st == "S" && _mag > mag) ||
+        (st != "S" && _mag > mag) ||
+        !showObj[st]
+      ) {
+        i = allstars_index[st] - 1;
+        continue;
+      }
+      var highlight = 1;
+      if (i == targetIndex || i == alignIndex) highlight = 0;
+      var pos = plotStar(allstars[i], camRays, highlight);
+      // select only stars if not aligned
+      // if aligned select all but constellations
+      var waiting_for_align = expectingSelect == selectAlignWithTimer;
+      if (pos && st != "Ca" && (validAlignType(st) || !waiting_for_align)) {
+        pos.index = i;
+        settargetsList((prev) => [...prev, pos]); //NOTE: push pos
+      }
+    }
+    if (alignIndex >= 0 && alignIndex != targetIndex) {
+      plotStar(allstars[alignIndex], camRays, 2);
+    }
+    if (targetIndex >= 0) {
+      var star = allstars[targetIndex];
+      var xyz = cameraBearing(star.RA, star.DE, camRays);
+      plotBearing(xyz);
+      var target_pos = plotStar(star, camRays, 3);
+      // handle a case were target < mag but it is valid align target
+      // ususally it means it is shown due to search
+      if (target_pos && validAlignType(star.t)) {
+        target_pos.index = targetIndex;
+        var found = false;
+        for (var i = 0; i < targetsList.length; i++) {
+          if (targetsList[i].index == target_pos.index) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          settargetsList((prev) => [...prev, target_pos]); //NOTE: push target_pos
+        }
+      }
+    } else if (useGyro) {
+      plotCross();
+    }
+    plotLines(camRays);
+    plotAltAz(camRays[2]);
+    var passed = Date.now() - start;
+    if (passed > expectedFrameRateMs / 2) {
+      setTimeout(plotStars, expectedFrameRateMs);
+    } else {
+      setTimeout(plotStars, expectedFrameRateMs - passed);
+    }
   };
 
   useEffect(() => {
@@ -823,7 +876,16 @@ export default function index() {
 
   return (
     <>
-      <MapCanvas />
+      <Canvas
+        className="flex-1 absolute top-0 left-0"
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: colors.surface,
+        }}
+      >
+        <Path path={path} color="lightblue" />
+      </Canvas>
 
       <View className="absolute bottom-0 left-0 p-4">
         <Text>{text}</Text>

@@ -1,25 +1,11 @@
+import Vec from "./vec";
+import vsop87a_milli_velocities from "./vsop87a_milli_velocities";
+import vsop87a_xsmall from "./vsop87a_xsmall";
+
+const vsop87a_full = vsop87a_xsmall;
+const vsop87a_full_velocities = vsop87a_milli_velocities;
+
 export default class CPReduce {
-  //By Greg Miller (gmiller@gregmiller.net) 2021
-  //Released as public domain
-
-  /*
-    Main function.
-    body - Integer representing the planet: 0=Mercury ... 7=Neptune, 9=Moon, 10=Sun
-    jd_utc - a Julian date representing the UCT time of observation
-    observer - an array observer[0]=Latitude, [1] = Longitude, [2] = Altitude above sea level - all input in radians
-
-    Returns array of 6 elements in radians
-    0 - Declination in J2000 - radians
-    1 - Right ascension in J2000 - radians
-    2 - Declination of Date - radians
-    3 - Right ascension of Date - radians
-    4 - Alt (0 horizon, 90 zenith) - radians
-    5 - Az (0 North, 90 East) - radians
-
-    Multiply each by 180/Math.PI to convert to degrees (declination, alt, az)
-    Multiply each by 180/Math.PI/15 to convert to hours (right ascension)
-    */
-
   static reduce(body, jd_utc, observer) {
     const jd_tt = this.convertUTCtoTT(jd_utc);
     const jd_tdb = jd_tt; //Converting TT to TDB won't produce more accurate results

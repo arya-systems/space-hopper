@@ -8,7 +8,7 @@
     "userInterfaceStyle": "automatic",
     "scheme": "your-app-scheme",
     "primaryColor": "#ffffff",
-    "backgroundColor": "#ff000000",
+    "backgroundColor": "#00000000",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
