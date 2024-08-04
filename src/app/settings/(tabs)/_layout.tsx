@@ -4,7 +4,6 @@ import React from "react";
 import Appearance from "./appearance";
 import Info from "./info";
 import Others from "./others";
-import Controls from "./controls";
 import Storage from "./storage";
 
 const Tab = createMaterialTopTabNavigator();
@@ -16,11 +15,6 @@ export default function TabLayout() {
         name="Appearance"
         component={Appearance}
         options={{ tabBarIcon: "color-palette" }}
-      />
-      <Tab.Screen
-        name="Controls"
-        component={Controls}
-        options={{ tabBarIcon: "construct" }}
       />
       <Tab.Screen
         name="Storage"

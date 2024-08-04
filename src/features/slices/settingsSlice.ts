@@ -1,14 +1,30 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-export type ThemeProps = "system" | "pureBlack" | "observation";
+export type ThemeProps = "pureBlack" | "observation";
+
+export type StarsProps = "few" | "all";
+export type DsoProps = "few" | "all";
+export type TextSizeProps = "small" | "medium" | "large";
 
 export type AppearanceProps = {
   colors: {
     theme: ThemeProps;
   };
+  visibility: {
+    stars: StarsProps;
+    dso: DsoProps;
+    textSize: TextSizeProps;
+    alignOnDso: boolean;
+    starNames: boolean;
+    openClusters: boolean;
+    globularClusters: boolean;
+    nebulaes: boolean;
+    galaxies: boolean;
+    planets: boolean;
+    constellations: boolean;
+  };
 };
-export type ControlsProps = {};
 export type StorageProps = {};
 export type OthersProps = {
   battery: {
@@ -18,7 +34,6 @@ export type OthersProps = {
 
 export interface SettingsProps {
   appearance: AppearanceProps;
-  controls: ControlsProps;
   storage: StorageProps;
   others: OthersProps;
   info: {};
@@ -27,10 +42,22 @@ export interface SettingsProps {
 const initialState: SettingsProps = {
   appearance: {
     colors: {
-      theme: "system",
+      theme: "pureBlack",
+    },
+    visibility: {
+      stars: "few",
+      dso: "few",
+      textSize: "small",
+      alignOnDso: true,
+      starNames: true,
+      openClusters: true,
+      globularClusters: true,
+      nebulaes: true,
+      galaxies: true,
+      planets: true,
+      constellations: true,
     },
   },
-  controls: {},
   storage: {},
   others: {
     battery: {
@@ -50,10 +77,6 @@ export const settingsSlice = createSlice({
     ) => {
       appearance.colors.theme = payload.colors.theme;
     },
-    setcontrols: (
-      { controls },
-      { payload }: PayloadAction<ControlsProps>,
-    ) => {},
     setstorage: ({ storage }, { payload }: PayloadAction<StorageProps>) => {
       storage = {};
     },
@@ -67,7 +90,6 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { setappearance, setcontrols, setstorage, setothers } =
-  settingsSlice.actions;
+export const { setappearance, setstorage, setothers } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

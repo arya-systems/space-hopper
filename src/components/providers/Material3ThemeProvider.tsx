@@ -5,11 +5,8 @@ import {
   useMaterial3Theme,
 } from "@pchmn/expo-material3-theme";
 import { createContext, useContext, useEffect } from "react";
-import { useColorScheme } from "react-native";
 import {
-  adaptNavigationTheme,
   MD3DarkTheme,
-  MD3LightTheme,
   MD3Theme,
   Provider as PaperProvider,
   ProviderProps,
@@ -30,8 +27,6 @@ export function Material3ThemeProvider({
   children,
   ...otherProps
 }: ProviderProps & { sourceColor?: string; fallbackSourceColor?: string }) {
-  const colorScheme = useColorScheme();
-
   const themeMode = useSelector(
     (state: RootState) => state.settings.appearance.colors.theme,
   );
@@ -52,7 +47,6 @@ export function Material3ThemeProvider({
       level5: "#212121",
     },
     backdrop: "#000000CC",
-    // onSurfaceVariant: "#f00",
   };
 
   const observationThemeColors: Material3Scheme = {
@@ -69,29 +63,23 @@ export function Material3ThemeProvider({
       level5: "#212121",
     },
     backdrop: "#000000CC",
-    // onSurfaceVariant: "#f00",
   };
 
   useEffect(() => {
-    if (themeMode === "system") {
-      resetTheme();
-    } else if (themeMode === "pureBlack") {
+    if (themeMode === "pureBlack") {
       resetTheme();
     } else if (themeMode === "observation") {
       updateTheme("#ff0000");
     }
   }, [themeMode]);
 
-  const paperTheme =
-    colorScheme === "dark"
-      ? {
-          ...MD3DarkTheme,
-          colors:
-            (themeMode === "pureBlack" && pureBlackThemeColors) ||
-            (themeMode === "observation" && observationThemeColors) ||
-            theme.dark,
-        }
-      : { ...MD3LightTheme, colors: theme.light };
+  const paperTheme = {
+    ...MD3DarkTheme,
+    colors:
+      (themeMode === "pureBlack" && pureBlackThemeColors) ||
+      (themeMode === "observation" && observationThemeColors) ||
+      theme.dark,
+  };
 
   return (
     <Material3ThemeProviderContext.Provider
