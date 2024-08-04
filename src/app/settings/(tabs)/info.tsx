@@ -5,10 +5,10 @@ import * as Linking from "expo-linking";
 
 export default function Info() {
   const handleSource = () => {
-    Linking.openURL("https://github.com/not-scripter/melodi");
+    Linking.openURL("https://github.com/arya-systems/space-hopper");
   };
   const handleIssue = () => {
-    Linking.openURL("https://github.com/not-scripter/melodi/issues");
+    Linking.openURL("https://github.com/arya-systems/space-hopper/issues");
   };
 
   return (

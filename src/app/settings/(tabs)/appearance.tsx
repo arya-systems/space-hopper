@@ -29,8 +29,8 @@ export default function Appearance() {
   const [isThemeDialogVisible, setisThemeDialogVisible] =
     useState<boolean>(false);
   const [stars, setstars] = useState<StarsProps>(visibility.stars);
-  const [dso, setdso] = useState<DsoProps>(visibility.dso);
   const [textSize, settextSize] = useState<TextSizeProps>(visibility.textSize);
+  const [dso, setdso] = useState<DsoProps>(visibility.dso);
   const [alignOnDso, setalignOnDso] = useState<boolean>(visibility.alignOnDso);
   const [starNames, setstarNames] = useState<boolean>(visibility.starNames);
   const [openClusters, setopenClusters] = useState<boolean>(
@@ -101,6 +101,8 @@ export default function Appearance() {
           title="Stars"
           right={() => (
             <SegmentedButtons
+              style={{ width: 150 }}
+              density="medium"
               value={stars}
               onValueChange={setstars}
               buttons={[
@@ -114,6 +116,8 @@ export default function Appearance() {
           title="DSO"
           right={() => (
             <SegmentedButtons
+              style={{ width: 150 }}
+              density="medium"
               value={dso}
               onValueChange={setdso}
               buttons={[
@@ -127,6 +131,8 @@ export default function Appearance() {
           title="Text Size"
           right={() => (
             <SegmentedButtons
+              style={{ width: 230 }}
+              density="medium"
               value={textSize}
               onValueChange={settextSize}
               buttons={[

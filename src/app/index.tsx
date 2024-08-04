@@ -930,6 +930,7 @@ export default function index() {
           onPress={() => router.navigate("settings")}
         />
         <FAB size="small" icon="locate" />
+        <FAB size="small" icon="search" />
       </View>
       <FAB
         size="medium"

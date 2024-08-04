@@ -25,7 +25,6 @@ export type AppearanceProps = {
     constellations: boolean;
   };
 };
-export type StorageProps = {};
 export type OthersProps = {
   battery: {
     optimizationDisabled: boolean;
@@ -34,7 +33,6 @@ export type OthersProps = {
 
 export interface SettingsProps {
   appearance: AppearanceProps;
-  storage: StorageProps;
   others: OthersProps;
   info: {};
 }
@@ -58,7 +56,6 @@ const initialState: SettingsProps = {
       constellations: true,
     },
   },
-  storage: {},
   others: {
     battery: {
       optimizationDisabled: false,
@@ -77,9 +74,6 @@ export const settingsSlice = createSlice({
     ) => {
       appearance.colors.theme = payload.colors.theme;
     },
-    setstorage: ({ storage }, { payload }: PayloadAction<StorageProps>) => {
-      storage = {};
-    },
     setothers: ({ others }, { payload }: PayloadAction<OthersProps>) => {
       others = {
         battery: {
@@ -90,6 +84,6 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { setappearance, setstorage, setothers } = settingsSlice.actions;
+export const { setappearance, setothers } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
