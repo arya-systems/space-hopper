@@ -931,6 +931,11 @@ export default function index() {
         />
         <FAB size="small" icon="locate" />
         <FAB size="small" icon="search" />
+        <FAB
+          size="small"
+          icon="home"
+          onPress={() => router.navigate("htmlContext")}
+        />
       </View>
       <FAB
         size="medium"
