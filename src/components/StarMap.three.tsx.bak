@@ -1,0 +1,106 @@
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
+import { Renderer } from "expo-three";
+
+interface StarData {
+  DE: number; // Declination
+  RA: number; // Right Ascension
+  name: string; // Name
+  t: string; // Type
+  AM: number; // Apparent Magnitude
+}
+
+const raDecToXYZ = (ra: number, dec: number, distance: number = 1) => {
+  const raRad = (ra / 180) * Math.PI; // Convert to radians
+  const decRad = (dec / 180) * Math.PI; // Convert to radians
+
+  const x = distance * Math.cos(decRad) * Math.cos(raRad);
+  const y = distance * Math.cos(decRad) * Math.sin(raRad);
+  const z = distance * Math.sin(decRad);
+
+  return { x, y, z };
+};
+const createStarGeometry = (stars: StarData[]) => {
+  const geometry = new THREE.BufferGeometry();
+  const vertices: number[] = [];
+
+  stars.forEach((star) => {
+    const { x, y, z } = raDecToXYZ(star.RA, star.DE);
+    vertices.push(x, y, z);
+  });
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3),
+  );
+
+  return geometry;
+};
+
+export default function three() {
+  const glViewRef = useRef<ExpoWebGLRenderingContext | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const gl = glViewRef.current!;
+      const renderer = new Renderer({ gl });
+      renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+      // Create scene and camera
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        gl.drawingBufferWidth / gl.drawingBufferHeight,
+        0.1,
+        1000,
+      );
+      camera.position.z = 5;
+
+      cameraRef.current = camera;
+      sceneRef.current = scene;
+
+      // Star data (replace this with your actual data)
+      const stars: StarData[] = [
+        { DE: 24.1167, RA: 56.75, name: "M45", t: "Oc", AM: 1.6 },
+        { DE: -8.2, RA: 83.6333, name: "M42", t: "Oc", AM: 0.4 },
+        // Add more stars here...
+      ];
+
+      // Create and add star points
+      const starGeometry = createStarGeometry(stars);
+      const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 1.5, // Adjust size based on Apparent Magnitude
+      });
+
+      const starPoints = new THREE.Points(starGeometry, starMaterial);
+      scene.add(starPoints);
+
+      // Animation loop
+      const animate = () => {
+        requestAnimationFrame(animate);
+
+        starPoints.rotation.x += 0.0005;
+        starPoints.rotation.y += 0.0005;
+
+        renderer.render(scene, camera);
+        gl.endFrameEXP();
+      };
+
+      animate();
+    };
+
+    init();
+  }, []);
+
+  return (
+    <GLView
+      className="bg-gray-500"
+      style={{ flex: 1 }}
+      onContextCreate={(gl) => (glViewRef.current = gl)}
+    />
+  );
+}
