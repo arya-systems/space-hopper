@@ -49,15 +49,50 @@ export default function StarMap({ stars }: StarMapProps) {
   };
 
   // Convert RA/Dec to XYZ coordinates
-  const raDecToXYZ = (ra: number, dec: number, distance: number = 1) => {
-    const raRad = (ra / 180) * Math.PI;
-    const decRad = (dec / 180) * Math.PI;
+  const raDecToXYZ = (star: Star) => {
+    const raRad = (star.RA / 180) * Math.PI;
+    const decRad = (star.DE / 180) * Math.PI;
+
+    const baseDistance = 50;
+    const distance = baseDistance + star.AM * 10;
+    //     // const distance = 50 + Math.log(1 + star.AM) * 20;
+    //     const minAM = Math.min(...stars.map(s => s.AM));
+    // const maxAM = Math.max(...stars.map(s => s.AM));
+    //
+    // const normalizedAM = (star.AM - minAM) / (maxAM - minAM);
+    // const distance = 30 + normalizedAM * 50;
 
     const x = distance * Math.cos(decRad) * Math.cos(raRad);
     const y = distance * Math.cos(decRad) * Math.sin(raRad);
     const z = distance * Math.sin(decRad);
 
-    return new THREE.Vector3(x, y, z);
+    const position = new THREE.Vector3(x, y, z);
+
+    const minSize = 0.05; // Minimum size for the dimmest stars
+    const maxSize = 0.5; // Maximum size for the brightest stars
+    const size = maxSize - star.AM * 0.1;
+
+    const t = star.t;
+    const color =
+      t === "Oc"
+        ? "#f00"
+        : t === "Ca"
+          ? "#f0f"
+          : t === "Gc"
+            ? "#ff0"
+            : t === "Ne"
+              ? "#0ff"
+              : t === "Ga"
+                ? "#0f0"
+                : t === "P"
+                  ? "#00f"
+                  : t === "S"
+                    ? "#0bbbb0"
+                    : t === "U"
+                      ? "#eee0e0"
+                      : "#ffffff";
+
+    return { position, size, color };
   };
 
   return (
@@ -72,24 +107,15 @@ export default function StarMap({ stars }: StarMapProps) {
 
         {/* Stars */}
         {stars.map((star, index) => {
-          const position = raDecToXYZ(star.RA, star.DE, 5); // 5 is the distance (can be scaled)
+          const { position, size, color } = raDecToXYZ(star);
+
           return (
             <mesh key={index} position={position.toArray()}>
-              <sphereGeometry args={[0.1, 16, 16]} />
-              <meshBasicMaterial color="#ff0000" />
+              <sphereGeometry args={[size, 16, 16]} />
+              <meshBasicMaterial color={color} />
             </mesh>
           );
         })}
-
-        {/* Optional: Add a star field background */}
-        {/* <Stars */}
-        {/*   radius={100} */}
-        {/*   depth={50} */}
-        {/*   count={5000} */}
-        {/*   factor={4} */}
-        {/*   saturation={0} */}
-        {/*   fade */}
-        {/* /> */}
       </Canvas>
     </View>
   );
