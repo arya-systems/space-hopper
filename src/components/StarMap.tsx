@@ -78,7 +78,28 @@ export default function StarMap({ stars }: StarMapProps) {
     const y = Math.cos(decRad) * Math.sin(raRad);
     const z = Math.sin(decRad);
 
-    return { x, y, z };
+    const r = Math.max(1, 5 - star.AM / 2);
+    const t = star.t;
+    const color =
+      t === "Oc"
+        ? "#f00"
+        : t === "Ca"
+          ? "#f0f"
+          : t === "Gc"
+            ? "#ff0"
+            : t === "Ne"
+              ? "#0ff"
+              : t === "Ga"
+                ? "#0f0"
+                : t === "P"
+                  ? "#00f"
+                  : t === "S"
+                    ? "#0bbbb0"
+                    : t === "U"
+                      ? "#eee0e0"
+                      : "#ffffff";
+
+    return { x, y, z, r, color };
   };
 
   const project3DTo2D = ({
@@ -108,7 +129,7 @@ export default function StarMap({ stars }: StarMapProps) {
       {stars.map((star, index) => {
         // const { x, y, r, color } = projectTo2d(star);
 
-        const { x, y, z } = raDecToXYZ(star);
+        const { x, y, z, r, color } = raDecToXYZ(star);
         const { x: x2D, y: y2D } = project3DTo2D({
           x,
           y,
@@ -118,7 +139,7 @@ export default function StarMap({ stars }: StarMapProps) {
 
         return (
           <React.Fragment key={index}>
-            <Circle cx={x2D} cy={y2D} r={2} color="#fff" />
+            <Circle cx={x2D} cy={y2D} r={r} color={color} />
           </React.Fragment>
         );
       })}
