@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
-import * as THREE from "three";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei/native";
+import { Canvas } from "@react-three/fiber/native";
+import React, { useState } from "react";
 import { Dimensions, View } from "react-native";
+import * as THREE from "three";
 
 type T = "Oc" | "Ga" | "Ne" | "Gc" | "P" | "Ca" | "S" | "U";
 interface Star {
@@ -69,8 +69,8 @@ export default function StarMap({ stars }: StarMapProps) {
 
     const position = new THREE.Vector3(x, y, z);
 
-    const minSize = 0.05; // Minimum size for the dimmest stars
-    const maxSize = 0.5; // Maximum size for the brightest stars
+    const minSize = 0.05;
+    const maxSize = 0.5;
     const size = maxSize - star.AM * 0.1;
 
     const t = star.t;
@@ -96,43 +96,43 @@ export default function StarMap({ stars }: StarMapProps) {
     return { position, size, color };
   };
 
-  const ZoomControls: React.FC = () => {
-    const cameraRef = useRef<THREE.PerspectiveCamera>(null!);
-
-    useFrame(() => {
-      if (cameraRef.current) {
-        // cameraRef.current.fov = 100;
-        // cameraRef.current.updateProjectionMatrix();
-        console.log(cameraRef.current.position);
-        console.log(cameraRef.current.near);
-        console.log(cameraRef.current.far);
-      }
-    });
-
-    return <perspectiveCamera ref={cameraRef} position={[0, 0, 50]} />;
-  };
-
   return (
     <View style={{ flex: 1 }} className="bg-gray-600 w-full h-full">
       <Canvas>
-        {/* Lighting */}
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
 
-        {/* Camera Controls */}
-        <OrbitControls enableZoom={true} zoomSpeed={1.0} />
+        <mesh>
+          <sphereGeometry args={[50, 32, 32]} />
+          <meshBasicMaterial color="#000080" wireframe={true} />
+        </mesh>
 
-        <ZoomControls />
+        <OrbitControls
+          makeDefault
+          enableZoom={true}
+          zoomSpeed={0.5}
+          minDistance={50}
+          maxDistance={200}
+        />
 
-        {/* Stars */}
+        <PerspectiveCamera
+          makeDefault
+          position={[0, 0, 100]} // Camera position
+          fov={75} // Field of view
+          near={0.1} // Near clipping plane
+          far={1000} // Far
+        />
+
         {stars.map((star, index) => {
           const { position, size, color } = raDecToXYZ(star);
 
           return (
-            <mesh key={index} position={position.toArray()}>
-              <sphereGeometry args={[size, 16, 16]} />
-              <meshBasicMaterial color={color} />
-            </mesh>
+            <group>
+              <mesh key={index} position={position.toArray()}>
+                <sphereGeometry args={[size, 16, 16]} />
+                <meshBasicMaterial color={color} />
+              </mesh>
+            </group>
           );
         })}
       </Canvas>
