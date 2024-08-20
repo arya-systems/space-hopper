@@ -52,73 +52,19 @@ export default function StarMap({ stars }: StarMapProps) {
     return { x, y, r, color };
   };
 
-  const useRotation = () => {
-    const [rotation, setRotation] = useState({ x: 0, y: 0 });
-
-    const panResponder = PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (evt, gestureState) => {
-        setRotation((prev) => ({
-          x: prev.x + gestureState.dy * 0.01,
-          y: prev.y + gestureState.dx * 0.01,
-        }));
-      },
-    });
-
-    return { rotation, panResponder };
-  };
-  const { rotation, panResponder } = useRotation();
-  const raDecToXYZ = (star: Star) => {
-    const ra = star.RA + (rotation.y * 180) / Math.PI;
-    const de = star.DE + (rotation.x * 180) / Math.PI;
-    const raRad = (ra / 180) * Math.PI; // Convert to radians
-    const decRad = (de / 180) * Math.PI; // Convert to radians
-
-    const x = Math.cos(decRad) * Math.cos(raRad);
-    const y = Math.cos(decRad) * Math.sin(raRad);
-    const z = Math.sin(decRad);
-
-    return { x, y, z };
-  };
-
-  const project3DTo2D = ({
-    x,
-    y,
-    z,
-    cameraDistance = 3,
-  }: {
-    x: number;
-    y: number;
-    z: number;
-    cameraDistance: number;
-  }) => {
-    const scale = cameraDistance / (cameraDistance + z); // Perspective projection
-    const x2D = x * scale * (width / 2) + width / 2;
-    const y2D = y * scale * (height / 2) + height / 2;
-
-    return { x: x2D, y: y2D };
-  };
 
   return (
     <Canvas
       className="flex-1 bg-black"
-      style={{ width, height }}
-      {...panResponder.panHandlers}
+      style={{ width, height, transform: [{ scale }] }}
     >
       {stars.map((star, index) => {
-        // const { x, y, r, color } = projectTo2d(star);
+        const { x, y, r, color } = projectTo2d(star);
 
-        const { x, y, z } = raDecToXYZ(star);
-        const { x: x2D, y: y2D } = project3DTo2D({
-          x,
-          y,
-          z,
-          cameraDistance: 3,
-        });
 
         return (
           <React.Fragment key={index}>
-            <Circle cx={x2D} cy={y2D} r={2} color="#fff" />
+            <Circle cx={x} cy={y} r={r} color={color} />
           </React.Fragment>
         );
       })}
