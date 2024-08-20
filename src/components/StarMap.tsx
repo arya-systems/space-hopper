@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { Dimensions, View } from "react-native";
@@ -53,8 +53,9 @@ export default function StarMap({ stars }: StarMapProps) {
     const raRad = (star.RA / 180) * Math.PI;
     const decRad = (star.DE / 180) * Math.PI;
 
-    const baseDistance = 50;
-    const distance = baseDistance + star.AM * 10;
+    const distance = Math.max(1, 30 + (star.AM - 0.4) * 10);
+    // const baseDistance = 50;
+    // const distance = baseDistance + star.AM * 10;
     //     // const distance = 50 + Math.log(1 + star.AM) * 20;
     //     const minAM = Math.min(...stars.map(s => s.AM));
     // const maxAM = Math.max(...stars.map(s => s.AM));
@@ -95,6 +96,22 @@ export default function StarMap({ stars }: StarMapProps) {
     return { position, size, color };
   };
 
+  const ZoomControls: React.FC = () => {
+    const cameraRef = useRef<THREE.PerspectiveCamera>(null!);
+
+    useFrame(() => {
+      if (cameraRef.current) {
+        // cameraRef.current.fov = 100;
+        // cameraRef.current.updateProjectionMatrix();
+        console.log(cameraRef.current.position);
+        console.log(cameraRef.current.near);
+        console.log(cameraRef.current.far);
+      }
+    });
+
+    return <perspectiveCamera ref={cameraRef} position={[0, 0, 50]} />;
+  };
+
   return (
     <View style={{ flex: 1 }} className="bg-gray-600 w-full h-full">
       <Canvas>
@@ -103,7 +120,9 @@ export default function StarMap({ stars }: StarMapProps) {
         <pointLight position={[10, 10, 10]} />
 
         {/* Camera Controls */}
-        <OrbitControls enableZoom={true} zoomSpeed={0.5} />
+        <OrbitControls enableZoom={true} zoomSpeed={1.0} />
+
+        <ZoomControls />
 
         {/* Stars */}
         {stars.map((star, index) => {
